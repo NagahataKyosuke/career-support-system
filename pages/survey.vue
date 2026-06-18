@@ -27,8 +27,8 @@ const advice = ref('')
 
 const submittedData = ref(null)
 
-function submitForm() {
-  submittedData.value = {
+async function submitForm() {
+  const data = {
     startPeriod: startPeriod.value,
     schedule: schedule.value,
     sites: sites.value,
@@ -43,6 +43,21 @@ function submitForm() {
     selfAnalysis: selfAnalysis.value,
     selfAnalysisAdvice: selfAnalysisAdvice.value,
     advice: advice.value
+  }
+
+  submittedData.value = data
+
+  try {
+    const result = await $fetch('/api/experience', {
+      method: 'POST',
+      body: data
+    })
+
+    console.log(result)
+    alert('送信成功')
+  } catch (error) {
+    console.error(error)
+    alert('送信失敗')
   }
 }
 </script>

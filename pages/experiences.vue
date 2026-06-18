@@ -1,58 +1,32 @@
 <script setup>
-import { ref, computed } from 'vue'
-
-const experiences = [
-  {
-    company: 'キーエンス',
-    startPeriod: '学部3年夏',
-    advice: 'インターンに積極的に参加した'
-  },
-  {
-    company: 'NTTデータ',
-    startPeriod: '修士1年前期',
-    advice: 'OB訪問が役立った'
-  },
-  {
-    company: '富士通',
-    startPeriod: '学部3年冬',
-    advice: 'ESを早めに作成した'
-  }
-]
-
-const searchKeyword = ref('')
-
-const filteredExperiences = computed(() => {
-  return experiences.filter(experience =>
-    experience.company.includes(searchKeyword.value)
-  )
-})
+const { data: experiences } = await useFetch('/api/experiences')
 </script>
 
 <template>
   <div>
     <h1>就活体験談一覧</h1>
 
-    <input
-      v-model="searchKeyword"
-      placeholder="企業名を検索"
-    >
-
     <div
-      v-for="experience in filteredExperiences"
-      :key="experience.company"
+      v-for="experience in experiences"
+      :key="experience.id"
     >
       <hr>
 
-      <h2>{{ experience.company }}</h2>
+      <h2>ID: {{ experience.id }}</h2>
 
       <p>
         就活開始時期:
-        {{ experience.startPeriod }}
+        {{ experience.start_period }}
       </p>
 
       <p>
-        アドバイス:
-        {{ experience.advice }}
+        おすすめ度:
+        {{ experience.recommendation }}
+      </p>
+
+      <p>
+        登録日時:
+        {{ experience.created_at }}
       </p>
     </div>
 
