@@ -10,8 +10,9 @@ export default defineEventHandler(async () => {
   })
 
   const [rows] = await connection.execute(`
-    SELECT
+   SELECT
       id,
+      company,
       start_period,
       recommendation,
       created_at

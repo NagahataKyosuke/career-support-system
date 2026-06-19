@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
 
     const [result] = await connection.execute(
       `INSERT INTO experiences (
+        company,
         start_period,
         schedule,
         sites,
@@ -32,8 +33,9 @@ export default defineEventHandler(async (event) => {
         self_analysis_advice,
         advice
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?)`,
       [
+        body.company || null,
         body.startPeriod || null,
         body.schedule || null,
         body.sites?.join(',') || null,

@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+const company = ref('')
 
 const startPeriod = ref('')
 const schedule = ref('')
@@ -29,6 +30,7 @@ const submittedData = ref(null)
 
 async function submitForm() {
   const data = {
+    company: company.value,
     startPeriod: startPeriod.value,
     schedule: schedule.value,
     sites: sites.value,
@@ -65,6 +67,9 @@ async function submitForm() {
 <template>
   <div>
     <h1>就活アンケート</h1>
+    <h3>企業名</h3>
+    <input v-model="company" type="text">
+    <hr>
 
     <hr>
 
