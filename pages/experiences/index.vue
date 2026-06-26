@@ -3,81 +3,156 @@ const { data: experiences } = await useFetch('/api/experiences')
 </script>
 
 <template>
-  <div class="container">
-    <h1>就活体験談一覧</h1>
+  <div class="page">
+    <header class="header">
+      <div class="logo">Career Support System</div>
 
-    <div
-      v-for="experience in experiences"
-      :key="experience.id"
-      class="card"
-    >
-      <NuxtLink :to="`/experiences/${experience.id}`">
-        <h2>{{ experience.company || '企業名未登録' }}</h2>
-      </NuxtLink>
+      <nav class="nav">
+        <NuxtLink to="/">ホーム</NuxtLink>
+        <NuxtLink to="/survey">アンケート</NuxtLink>
+      </nav>
+    </header>
 
-      <p>就活開始時期: {{ experience.start_period }}</p>
+    <div class="container">
+      <h1>就活体験談一覧</h1>
 
-      <p>
-        おすすめ度:
-        {{ '★'.repeat(experience.recommendation || 0) }}
-      </p>
+      <div
+        v-for="experience in experiences"
+        :key="experience.id"
+        class="card"
+      >
+        <NuxtLink
+          :to="`/experiences/${experience.id}`"
+          class="card-link"
+        >
+          <div class="card-top">
+            <h2>{{ experience.company || '企業名未登録' }}</h2>
 
-      <p>登録日時: {{ experience.created_at }}</p>
-    </div>
+            <span class="rating">
+              {{ '★'.repeat(experience.recommendation || 0) }}
+            </span>
+          </div>
 
-    <div class="back-button">
-      <NuxtLink to="/">
-        <button>トップへ戻る</button>
-      </NuxtLink>
+          <p>就活開始時期: {{ experience.start_period }}</p>
+          <p>登録日時: {{ experience.created_at }}</p>
+
+          <div class="detail-text">
+            詳細を見る →
+          </div>
+        </NuxtLink>
+      </div>
+
+      <div class="back-button">
+        <NuxtLink to="/">
+          <button>トップへ戻る</button>
+        </NuxtLink>
+      </div>
     </div>
   </div>
 </template>
 
-<style>
-body {
-  margin: 0;
-  background: #f5f7fb;
-  font-family: sans-serif;
+<style scoped>
+.page {
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at top right, #1e3a8a, transparent 25%),
+    radial-gradient(circle at bottom left, #1d4ed8, transparent 25%),
+    linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+}
+
+.header {
+  width: 100%;
+  height: 90px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 48px;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(96,165,250,0.15);
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.nav {
+  display: flex;
+  gap: 28px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.nav a:hover {
+  color: #60a5fa;
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: auto;
-  padding: 40px 20px;
+  padding: 50px 20px;
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 40px;
-  font-size: 42px;
+  font-size: 52px;
+  margin-bottom: 50px;
 }
 
 .card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s;
+  margin-bottom: 28px;
+  border-radius: 24px;
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+  transition: all 0.25s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
+}
+
+.card-link {
+  display: block;
+  padding: 28px;
+  text-decoration: none;
+  color: white;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card h2 {
-  margin-top: 0;
-  color: #2563eb;
-  font-size: 32px;
+  margin: 0;
+  font-size: 34px;
 }
 
-.card a {
-  text-decoration: none;
+.rating {
+  color: #facc15;
+  font-size: 24px;
 }
 
 .card p {
-  margin: 12px 0;
+  margin: 16px 0;
   font-size: 20px;
+  color: #cbd5e1;
+}
+
+.detail-text {
+  margin-top: 20px;
+  color: #60a5fa;
+  font-weight: 700;
 }
 
 .back-button {
@@ -86,25 +161,14 @@ h1 {
 }
 
 button {
-  padding: 14px 28px;
+  min-width: 220px;
+  height: 60px;
   border: none;
-  border-radius: 12px;
-  background: #2563eb;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
   color: white;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-.button-area {
-  display: inline-flex;
-  gap: 20px;
-  padding: 20px;
-  border: 3px solid #2563eb;
-  border-radius: 20px;
-  background: white;
 }
 </style>
