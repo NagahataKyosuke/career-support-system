@@ -10,6 +10,7 @@ const { data: experiences } = await useFetch('/api/experiences')
       <nav class="nav">
         <NuxtLink to="/">ホーム</NuxtLink>
         <NuxtLink to="/survey">アンケート</NuxtLink>
+        <NuxtLink to="/analytics">分析ダッシュボード</NuxtLink>
       </nav>
     </header>
 
@@ -33,6 +34,7 @@ const { data: experiences } = await useFetch('/api/experiences')
             </span>
           </div>
 
+          <p>業界カテゴリ: {{ experience.category || '未分類' }}</p>
           <p>就活開始時期: {{ experience.start_period }}</p>
           <p>登録日時: {{ experience.created_at }}</p>
 
@@ -62,6 +64,7 @@ const { data: experiences } = await useFetch('/api/experiences')
   color: white;
 }
 
+/* Header */
 .header {
   width: 100%;
   height: 90px;
@@ -82,19 +85,25 @@ const { data: experiences } = await useFetch('/api/experiences')
 
 .nav {
   display: flex;
-  gap: 28px;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav a {
   text-decoration: none;
   color: #cbd5e1;
   font-weight: 600;
+  font-size: 17px;
+  transition: 0.2s;
 }
 
 .nav a:hover {
   color: #60a5fa;
 }
 
+/* Main */
 .container {
   max-width: 1100px;
   margin: auto;
@@ -107,6 +116,7 @@ h1 {
   margin-bottom: 50px;
 }
 
+/* Card */
 .card {
   margin-bottom: 28px;
   border-radius: 24px;
@@ -155,6 +165,7 @@ h1 {
   font-weight: 700;
 }
 
+/* Button */
 .back-button {
   text-align: center;
   margin-top: 40px;
@@ -170,5 +181,11 @@ button {
   cursor: pointer;
   font-size: 18px;
   font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
 }
 </style>

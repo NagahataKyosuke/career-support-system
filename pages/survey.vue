@@ -49,10 +49,10 @@ async function submitForm() {
 
     console.log(result)
     alert('送信成功')
-  } catch (error) {
-    console.error(error)
-    alert('送信失敗')
-  }
+  }catch (error) {
+  console.error('FULL ERROR:', error)
+  alert(JSON.stringify(error))
+}
 }
 </script>
 

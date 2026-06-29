@@ -57,10 +57,10 @@ export default defineEventHandler(async (event) => {
     const category = classifyCategory(body)
 
     const connection = await mysql.createConnection({
-      host: 'mysql',
-      user: 'root',
-      password: 'root',
-      database: 'career_support',
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       charset: 'utf8mb4'
     })
 
@@ -83,10 +83,14 @@ export default defineEventHandler(async (event) => {
         self_analysis_advice,
         advice
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?)`,
+      VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?, ?
+      )
+      `,
       [
         body.company || null,
-        body.category || null,
+        category,
         body.startPeriod || null,
         body.schedule || null,
         body.sites?.join(',') || null,
