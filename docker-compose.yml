@@ -3,6 +3,28 @@ services:
     build: .
     ports:
       - "3000:3000"
+    depends_on:
+      - mysql
+    restart: always
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: career_support
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: career_support
+      TZ: Asia/Tokyo
+    ports:
+      - "3306:3306"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+
+volumes:
+  mysql_data:
