@@ -78,14 +78,13 @@ export default defineEventHandler(async (event) => {
         gakuchika,
         difficulty,
         research_method,
-        research_tool,
         self_analysis,
         self_analysis_advice,
         advice
       )
       VALUES (
         ?, ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?
       )
       `,
       [
@@ -101,7 +100,6 @@ export default defineEventHandler(async (event) => {
         body.gakuchika || null,
         body.difficulty || null,
         body.researchMethod || null,
-        body.researchTool || null,
         body.selfAnalysis?.join(',') || null,
         body.selfAnalysisAdvice || null,
         body.advice || null

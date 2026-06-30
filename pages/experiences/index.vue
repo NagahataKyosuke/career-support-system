@@ -1,5 +1,56 @@
 <script setup>
+import { ref, computed } from 'vue'
+
 const { data: experiences } = await useFetch('/api/experiences')
+
+const password = ref('')
+const isAdmin = ref(false)
+
+/* 検索用 */
+const searchKeyword = ref('')
+const selectedCategory = ref('')
+
+const filteredExperiences = computed(() => {
+  if (!experiences.value) return []
+
+  return experiences.value.filter(exp => {
+    const companyMatch =
+      !searchKeyword.value ||
+      exp.company?.includes(searchKeyword.value)
+
+    const categoryMatch =
+      !selectedCategory.value ||
+      exp.category === selectedCategory.value
+
+    return companyMatch && categoryMatch
+  })
+})
+
+function login() {
+  if (password.value === 'nagahata123') {
+    isAdmin.value = true
+    alert('管理者ログイン成功')
+  } else {
+    alert('パスワードが違います')
+  }
+}
+
+async function deleteExperience(id) {
+  const ok = confirm('本当に削除しますか？')
+  if (!ok) return
+
+  try {
+    await $fetch(`/api/experiences/${id}`, {
+      method: 'DELETE'
+    })
+
+    alert('削除成功')
+    location.reload()
+  } catch (error) {
+    console.error(error)
+    alert('削除失敗')
+  }
+}
 </script>
 
 <template>
@@ -17,8 +68,35 @@ const { data: experiences } = await useFetch('/api/experiences')
     <div class="container">
       <h1>就活体験談一覧</h1>
 
+      <!-- 絞り込み検索 -->
+      <div class="filter-box">
+        <input
+          v-model="searchKeyword"
+          type="text"
+          placeholder="企業名で検索"
+        >
+
+        <select v-model="selectedCategory">
+          <option value="">すべて</option>
+          <option value="IT">IT</option>
+          <option value="メーカー">メーカー</option>
+          <option value="金融">金融</option>
+          <option value="コンサル">コンサル</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+
+      <div class="admin-login" v-if="!isAdmin">
+        <input
+          v-model="password"
+          type="password"
+          placeholder="管理者パスワード"
+        >
+        <button @click="login">ログイン</button>
+      </div>
+
       <div
-        v-for="experience in experiences"
+        v-for="experience in filteredExperiences"
         :key="experience.id"
         class="card"
       >
@@ -42,6 +120,19 @@ const { data: experiences } = await useFetch('/api/experiences')
             詳細を見る →
           </div>
         </NuxtLink>
+
+        <div v-if="isAdmin" class="admin-buttons">
+          <NuxtLink :to="`/admin/edit/${experience.id}`">
+            <button class="edit-btn">編集</button>
+          </NuxtLink>
+
+          <button
+            class="delete-btn"
+            @click="deleteExperience(experience.id)"
+          >
+            削除
+          </button>
+        </div>
       </div>
 
       <div class="back-button">
@@ -64,7 +155,6 @@ const { data: experiences } = await useFetch('/api/experiences')
   color: white;
 }
 
-/* Header */
 .header {
   width: 100%;
   height: 90px;
@@ -86,8 +176,6 @@ const { data: experiences } = await useFetch('/api/experiences')
 .nav {
   display: flex;
   gap: 32px;
-  flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
 }
 
@@ -95,15 +183,12 @@ const { data: experiences } = await useFetch('/api/experiences')
   text-decoration: none;
   color: #cbd5e1;
   font-weight: 600;
-  font-size: 17px;
-  transition: 0.2s;
 }
 
 .nav a:hover {
   color: #60a5fa;
 }
 
-/* Main */
 .container {
   max-width: 1100px;
   margin: auto;
@@ -113,17 +198,55 @@ const { data: experiences } = await useFetch('/api/experiences')
 h1 {
   text-align: center;
   font-size: 52px;
-  margin-bottom: 50px;
+  margin-bottom: 40px;
 }
 
-/* Card */
+/* 検索 */
+.filter-box {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.filter-box input,
+.filter-box select {
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 16px;
+}
+
+.filter-box input {
+  width: 300px;
+}
+
+.filter-box select {
+  width: 180px;
+}
+
+.admin-login {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.admin-login input {
+  width: 300px;
+  height: 50px;
+  border-radius: 12px;
+  border: none;
+  padding: 0 16px;
+}
+
 .card {
   margin-bottom: 28px;
   border-radius: 24px;
   background: rgba(30, 41, 59, 0.8);
   backdrop-filter: blur(16px);
   box-shadow: 0 12px 28px rgba(0,0,0,0.25);
-  transition: all 0.25s ease;
 }
 
 .card:hover {
@@ -165,7 +288,29 @@ h1 {
   font-weight: 700;
 }
 
-/* Button */
+.admin-buttons {
+  padding: 0 28px 28px 28px;
+}
+
+.edit-btn {
+  width: 120px;
+  height: 45px;
+  background: #10b981;
+  border: none;
+  border-radius: 12px;
+  color: white;
+}
+
+.delete-btn {
+  width: 120px;
+  height: 45px;
+  margin-left: 12px;
+  background: #ef4444;
+  border: none;
+  border-radius: 12px;
+  color: white;
+}
+
 .back-button {
   text-align: center;
   margin-top: 40px;
@@ -181,11 +326,5 @@ button {
   cursor: pointer;
   font-size: 18px;
   font-weight: bold;
-  transition: 0.2s;
-}
-
-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
 }
 </style>

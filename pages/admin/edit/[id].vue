@@ -1,24 +1,35 @@
 <script setup>
 import { ref } from 'vue'
 
-const company = ref('')
-const category = ref('')
-const startPeriod = ref('')
-const schedule = ref('')
-const sites = ref([])
-const recommendation = ref('')
-const merit = ref('')
-const demerit = ref('')
-const motivation = ref('')
-const gakuchika = ref('')
-const difficulty = ref('')
-const researchMethod = ref('')
-const selfAnalysis = ref([])
-const selfAnalysisAdvice = ref('')
-const advice = ref('')
+const route = useRoute()
+const id = route.params.id
+
+const { data } = await useFetch(`/api/experiences/${id}`)
+
+const company = ref(data.value?.company || '')
+const category = ref(data.value?.category || '')
+const startPeriod = ref(data.value?.start_period || '')
+const schedule = ref(data.value?.schedule || '')
+const sites = ref(data.value?.sites ? data.value.sites.split(',') : [])
+const recommendation = ref(String(data.value?.recommendation || ''))
+const merit = ref(data.value?.merit || '')
+const demerit = ref(data.value?.demerit || '')
+const motivation = ref(data.value?.motivation || '')
+const gakuchika = ref(data.value?.gakuchika || '')
+const difficulty = ref(data.value?.difficulty || '')
+const researchMethod = ref(data.value?.research_method || '')
+const selfAnalysis = ref(
+  data.value?.self_analysis
+    ? data.value.self_analysis.split(',')
+    : []
+)
+const selfAnalysisAdvice = ref(
+  data.value?.self_analysis_advice || ''
+)
+const advice = ref(data.value?.advice || '')
 
 async function submitForm() {
-  const data = {
+  const formData = {
     company: company.value,
     category: category.value,
     startPeriod: startPeriod.value,
@@ -37,23 +48,23 @@ async function submitForm() {
   }
 
   try {
-    const result = await $fetch('/api/experience', {
-      method: 'POST',
-      body: data
+    await $fetch(`/api/experiences/${id}`, {
+      method: 'PUT',
+      body: formData
     })
 
-    console.log(result)
-    alert('送信成功')
-  }catch (error) {
-  console.error('FULL ERROR:', error)
-  alert(JSON.stringify(error))
-}
+    alert('更新成功')
+    navigateTo('/experiences')
+  } catch (error) {
+    console.error(error)
+    alert('更新失敗')
+  }
 }
 </script>
 
 <template>
   <div class="survey-page">
-    <h1>就活アンケート</h1>
+    <h1>アンケート編集</h1>
 
     <div class="question-card">
       <h3>企業名</h3>
@@ -230,7 +241,7 @@ async function submitForm() {
     </div>
 
     <div class="button-area">
-      <button class="submit-btn" @click="submitForm">送信</button>
+      <button class="submit-btn" @click="submitForm">更新</button>
 
       <NuxtLink to="/">
         <button class="back-btn">トップへ戻る</button>
@@ -239,102 +250,3 @@ async function submitForm() {
 
   </div>
 </template>
-
-<style scoped>
-.survey-page {
-  min-height: 100vh;
-  padding: 50px 20px;
-  font-family: 'Segoe UI', sans-serif;
-  background:
-    radial-gradient(circle at top right, #1e3a8a, transparent 25%),
-    radial-gradient(circle at bottom left, #1d4ed8, transparent 25%),
-    linear-gradient(135deg, #020617, #0f172a);
-  color: white;
-}
-
-h1 {
-  text-align: center;
-  font-size: 52px;
-  margin-bottom: 50px;
-}
-
-.question-card {
-  max-width: 1000px;
-  margin: 0 auto 32px auto;
-  padding: 32px;
-  border-radius: 24px;
-  background: rgba(30, 41, 59, 0.8);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(96, 165, 250, 0.15);
-}
-
-.question-card h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: #dbeafe;
-  font-size: 24px;
-}
-
-.question-card label {
-  display: block;
-  margin: 12px 0;
-  font-size: 18px;
-}
-
-input[type="text"] {
-  width: 100%;
-  height: 52px;
-  border: none;
-  border-radius: 12px;
-  padding: 0 16px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-textarea {
-  width: 100%;
-  min-height: 150px;
-  border: none;
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 16px;
-  box-sizing: border-box;
-  resize: vertical;
-}
-
-input[type="radio"],
-input[type="checkbox"] {
-  margin-right: 12px;
-  transform: scale(1.2);
-}
-
-.button-area {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin: 40px 0;
-}
-
-.submit-btn,
-.back-btn {
-  min-width: 200px;
-  height: 64px;
-  border: none;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-  transition: all 0.25s ease;
-}
-
-.submit-btn:hover,
-.back-btn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.45);
-}
-
-</style>
